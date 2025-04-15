@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Box,
@@ -113,14 +114,14 @@ function App() {
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   return (
-    <Box bg="gray.50" minH="100vh" py={6} px={4}>
-      <VStack spacing={4} mb={6}>
+    <Box bg="gray.50" minH="100vh" py={[4, 6]} px={[2, 6]}>
+      <VStack spacing={3} mb={6}>
         <Image
           src="https://saintclareofassisi.org/wp-content/uploads/2020/06/logo.png"
           alt="St. Clare of Assisi"
-          boxSize="120px"
+          boxSize={["60px", "80px", "100px"]}
         />
-        <Heading color="blue.800" size="lg" textAlign="center">
+        <Heading color="blue.800" size={["md", "lg"]} textAlign="center">
           St. Clare Fish Fry
         </Heading>
       </VStack>
@@ -136,7 +137,13 @@ function App() {
                 </Heading>
                 <Flex wrap="wrap" gap={4}>
                   {items.map((item) => (
-                    <Card key={item.name} w="220px" bg="white" boxShadow="md" borderRadius="lg">
+                    <Card
+                      key={item.name}
+                      w={["100%", "48%", "220px"]}
+                      bg="white"
+                      boxShadow="md"
+                      borderRadius="lg"
+                    >
                       <CardBody>
                         <Stack spacing={3}>
                           <Text fontWeight="bold">{item.name}</Text>
@@ -147,6 +154,7 @@ function App() {
                             colorScheme="blue"
                             size="sm"
                             onClick={() => addToCart(item)}
+                            w="full"
                           >
                             Add to Cart
                           </Button>
@@ -161,7 +169,15 @@ function App() {
         </Box>
 
         {/* Cart Section */}
-        <Box flex="1" position="sticky" top="20px" bg="white" p={4} borderRadius="lg" boxShadow="md">
+        <Box
+          flex="1"
+          position={["static", null, "sticky"]}
+          top="20px"
+          bg="white"
+          p={4}
+          borderRadius="lg"
+          boxShadow="md"
+        >
           <Heading size="md" mb={3} color="blue.700">
             Your Cart
           </Heading>
@@ -206,20 +222,19 @@ function App() {
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
           />
-          <Button
-            mt={3}
-            colorScheme="green"
-            width="100%"
-            onClick={handleCheckout}
-          >
+          <Button mt={3} colorScheme="green" width="100%" onClick={handleCheckout}>
             Place Order
           </Button>
 
           {orderPlaced && latestOrder && (
             <Box bg="green.50" p={3} borderRadius="md" mt={4}>
-              <Heading size="sm" mb={1}>Order Receipt</Heading>
+              <Heading size="sm" mb={1}>
+                Order Receipt
+              </Heading>
               <Text fontSize="sm">Order #{latestOrder.id}</Text>
-              <Text fontSize="sm" fontWeight="medium">Name: {latestOrder.name}</Text>
+              <Text fontSize="sm" fontWeight="medium">
+                Name: {latestOrder.name}
+              </Text>
               <VStack align="start" spacing={1} mt={2}>
                 {latestOrder.items.map((item, i) => (
                   <Text fontSize="sm" key={i}>
