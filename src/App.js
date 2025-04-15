@@ -7,13 +7,13 @@ import {
   Input,
   VStack,
   HStack,
-  Divider,
+  Flex,
+  Image,
   useToast,
   Card,
   CardBody,
   Stack,
-  Flex,
-  Badge,
+  Divider,
 } from "@chakra-ui/react";
 
 const menu = {
@@ -88,7 +88,12 @@ function App() {
 
   const handleCheckout = () => {
     if (!customerName) {
-      toast({ title: "Please enter your name.", status: "warning", duration: 3000 });
+      toast({
+        title: "Please enter your name.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
       return;
     }
     const newOrder = {
@@ -108,85 +113,130 @@ function App() {
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   return (
-    <Box maxW="800px" mx="auto" p={6}>
-      <Heading mb={6}>Fish Fry Ordering</Heading>
-      <VStack align="stretch" spacing={6}>
-        {Object.entries(menu).map(([category, items]) => (
-          <Box key={category}>
-            <Heading size="md" mb={2}>{category}</Heading>
-            <Flex flexWrap="wrap" gap={4}>
-              {items.map((item) => (
-                <Card key={item.name} w="200px">
-                  <CardBody>
-                    <Stack spacing={3}>
-                      <Text fontWeight="bold">{item.name}</Text>
-                      <Text>${item.price}</Text>
-                      <Button size="sm" colorScheme="blue" onClick={() => addToCart(item)}>Add</Button>
-                    </Stack>
-                  </CardBody>
-                </Card>
-              ))}
-            </Flex>
-          </Box>
-        ))}
+    <Box bg="gray.50" minH="100vh" py={6} px={4}>
+      <VStack spacing={4} mb={6}>
+        <Image
+          src="https://saintclareofassisi.org/wp-content/uploads/2020/06/logo.png"
+          alt="St. Clare of Assisi"
+          boxSize="120px"
+        />
+        <Heading color="blue.800" size="lg" textAlign="center">
+          St. Clare Fish Fry
+        </Heading>
+      </VStack>
 
-        <Divider />
+      <Flex direction={["column", null, "row"]} maxW="1200px" mx="auto" gap={6}>
+        {/* Menu Section */}
+        <Box flex="3">
+          <VStack spacing={8} align="stretch">
+            {Object.entries(menu).map(([category, items]) => (
+              <Box key={category}>
+                <Heading size="md" mb={2} color="blue.700">
+                  {category}
+                </Heading>
+                <Flex wrap="wrap" gap={4}>
+                  {items.map((item) => (
+                    <Card key={item.name} w="220px" bg="white" boxShadow="md" borderRadius="lg">
+                      <CardBody>
+                        <Stack spacing={3}>
+                          <Text fontWeight="bold">{item.name}</Text>
+                          <Text fontSize="sm" color="gray.600">
+                            ${item.price}
+                          </Text>
+                          <Button
+                            colorScheme="blue"
+                            size="sm"
+                            onClick={() => addToCart(item)}
+                          >
+                            Add to Cart
+                          </Button>
+                        </Stack>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </Flex>
+              </Box>
+            ))}
+          </VStack>
+        </Box>
 
-        <Box>
-          <Heading size="md" mb={2}>Your Cart</Heading>
+        {/* Cart Section */}
+        <Box flex="1" position="sticky" top="20px" bg="white" p={4} borderRadius="lg" boxShadow="md">
+          <Heading size="md" mb={3} color="blue.700">
+            Your Cart
+          </Heading>
           {cart.length === 0 ? (
             <Text>No items yet.</Text>
           ) : (
-            <VStack align="stretch" spacing={2}>
+            <VStack align="stretch" spacing={3}>
               {cart.map((item, index) => (
-                <HStack key={index} justify="space-between" align="start">
-                  <Box>
-                    <Text>
-                      {item.qty} x {item.name} - ${item.qty * item.price}
+                <Box key={index} borderBottom="1px solid #eee" pb={2}>
+                  <Text fontWeight="medium">
+                    {item.qty} x {item.name} — ${item.qty * item.price}
+                  </Text>
+                  {item.note && (
+                    <Text fontSize="sm" color="gray.500">
+                      Note: {item.note}
                     </Text>
-                    {item.note && <Text fontSize="sm" color="gray.500">Note: {item.note}</Text>}
-                  </Box>
-                  <HStack>
-                    <Button size="xs" onClick={() => decreaseQty(index)}>-</Button>
-                    <Button size="xs" onClick={() => addToCart(item)}>+</Button>
-                    <Button size="xs" colorScheme="red" onClick={() => removeFromCart(index)}>Remove</Button>
+                  )}
+                  <HStack spacing={1} mt={1}>
+                    <Button size="xs" onClick={() => decreaseQty(index)}>
+                      -
+                    </Button>
+                    <Button size="xs" onClick={() => addToCart(item)}>
+                      +
+                    </Button>
+                    <Button
+                      size="xs"
+                      colorScheme="red"
+                      onClick={() => removeFromCart(index)}
+                    >
+                      Remove
+                    </Button>
                   </HStack>
-                </HStack>
+                </Box>
               ))}
             </VStack>
           )}
-          <Text mt={4} fontWeight="bold">Total: ${total}</Text>
+          <Divider my={4} />
+          <Text fontWeight="bold">Total: ${total}</Text>
           <Input
-            mt={4}
+            mt={3}
             placeholder="Your Name"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
           />
-          <Button mt={2} colorScheme="green" onClick={handleCheckout}>
+          <Button
+            mt={3}
+            colorScheme="green"
+            width="100%"
+            onClick={handleCheckout}
+          >
             Place Order
           </Button>
-        </Box>
 
-        {orderPlaced && latestOrder && (
-          <Box bg="green.50" p={4} borderRadius="md" mt={4}>
-            <Heading size="sm">Order Receipt</Heading>
-            <Text>Order #{latestOrder.id}</Text>
-            <Text><strong>Name:</strong> {latestOrder.name}</Text>
-            <VStack align="start" spacing={1} mt={2}>
-              {latestOrder.items.map((item, i) => (
-                <Text key={i}>
-                  {item.qty} x {item.name} - ${item.qty * item.price}{" "}
-                  {item.note && <em>(Note: {item.note})</em>}
-                </Text>
-              ))}
-            </VStack>
-            <Text mt={2}><strong>Total:</strong> ${latestOrder.total}</Text>
-          </Box>
-        )}
-      </VStack>
+          {orderPlaced && latestOrder && (
+            <Box bg="green.50" p={3} borderRadius="md" mt={4}>
+              <Heading size="sm" mb={1}>Order Receipt</Heading>
+              <Text fontSize="sm">Order #{latestOrder.id}</Text>
+              <Text fontSize="sm" fontWeight="medium">Name: {latestOrder.name}</Text>
+              <VStack align="start" spacing={1} mt={2}>
+                {latestOrder.items.map((item, i) => (
+                  <Text fontSize="sm" key={i}>
+                    {item.qty} x {item.name} - ${item.qty * item.price}
+                    {item.note && <em> (Note: {item.note})</em>}
+                  </Text>
+                ))}
+              </VStack>
+              <Text fontWeight="bold" mt={2}>
+                Total: ${latestOrder.total}
+              </Text>
+            </Box>
+          )}
+        </Box>
+      </Flex>
     </Box>
   );
 }
 
 export default App;
-
